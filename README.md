@@ -21,35 +21,25 @@
 
 ## ✨ Fonctionnalités
 
-- 🗺️ **Carte interactive** : Zoom, déplacement, navigation fluide
-- 🇫🇷 **Fond de carte IGN** : Utilisation du Plan IGN V2 officiel
-- 📍 **Navigation rapide** : Boutons vers Paris, Lyon, Marseille
-- 🖱️ **Marqueurs interactifs** : Cliquez sur la carte pour placer un marqueur
-- 📊 **Informations temps réel** : Coordonnées et niveau de zoom actualisés
-- 🎨 **Interface moderne** : Design épuré avec animations
+* 🗺️ **Carte interactive** : Zoom, déplacement, navigation fluide
+* 🇫🇷 **Fonds de carte IGN sélectionnables** : Choisissez entre :
+    * **Plan IGN V2** (Plan de base)
+    * **Orthophotographie** (Vue satellite)
+    * **Parcelles Cadastrales** (Limites de propriété)
+* 📍 **Géolocalisation** : Centrage automatique sur votre position actuelle (avec autorisation de Chrome)
+* 📍 **Navigation rapide** : Boutons vers Paris, Lyon, Marseille
+* 🖱️ **Marqueurs interactifs** : Cliquez sur la carte pour placer un marqueur
+* 📊 **Informations temps réel** : Coordonnées et niveau de zoom actualisés
+* 🎨 **Interface moderne** : Design épuré avec animations
 
 ---
 
 ## 📸 Aperçu
 
-```
-┌─────────────────────────────────────┐
-│  🗺️ Carte IGN Interactive           │
-│  Powered by Leaflet & IGN           │
-├─────────────────────────────────────┤
-│ [📍 Paris] [📍 Lyon] [📍 Marseille]│
-├─────────────────────────────────────┤
-│                                     │
-│         [Carte interactive]         │
-│                                     │
-│                                     │
-├─────────────────────────────────────┤
-│ Lat: 48.8566 | Lon: 2.3522         │
-│                       Zoom: 12      │
-└─────────────────────────────────────┘
-```
-
-*(Ajouter ici vos captures d'écran réelles)*
+| Vue Principale | Fond Orthophoto (Paris) | Fond Cadastre (Marseille) |
+| :---: | :---: | :---: |
+| ![Aperçu de l'extension](docs/screenshots/extension.png) | ![Aperçu du fond Orthophoto sur Paris](docs/screenshots/paris_ortho.png) | ![Aperçu du fond Cadastre sur Marseille](docs/screenshots/marseille_cadastre.png) |
+| *L'extension lors de son ouverture.* | *Aperçu de la vue Orthophotographie.* | *Aperçu de la vue Cadastrale.* |
 
 ---
 
@@ -64,27 +54,21 @@
 1. **Télécharger le projet**
    ```bash
    # Cloner ou télécharger le dossier complet
-   ```
+2.  **Charger l'extension**
 
-2. **Créer les icônes**
-   - Placez 3 icônes PNG dans le dossier `icons/` :
-     - `icon16.png` (16×16 pixels)
-     - `icon48.png` (48×48 pixels)
-     - `icon128.png` (128×128 pixels)
+      - Ouvrez Chrome : `chrome://extensions/`
+      - Activez le "**Mode développeur**"
+      - Cliquez "**Charger l'extension non empaquetée**"
+      - Sélectionnez le dossier du projet
 
-3. **Charger l'extension**
-   - Ouvrez Chrome : `chrome://extensions/`
-   - Activez le "Mode développeur"
-   - Cliquez "Charger l'extension non empaquetée"
-   - Sélectionnez le dossier du projet
+3.  **Utiliser l'extension**
 
-4. **Utiliser l'extension**
-   - Cliquez sur l'icône de l'extension dans la barre d'outils
-   - La carte s'affiche dans un popup
+      - Cliquez sur l'icône de l'extension dans la barre d'outils
+      - La carte s'affiche dans un popup
 
-📖 **Documentation complète** : Consultez [docs/installation.md](docs/installation.md)
+📖 **Documentation complète** : Consultez [docs/installation.md](https://www.google.com/search?q=docs/installation.md)
 
----
+-----
 
 ## 📁 Structure du projet
 
@@ -92,8 +76,8 @@
 extension-carte-ign/
 │
 ├── manifest.json          # Configuration de l'extension (Manifest V3)
-├── popup.html            # Interface utilisateur du popup
-├── popup.js              # Logique JavaScript et Leaflet
+├── popup.html            # Interface utilisateur du popup (avec sélecteur de fonds)
+├── popup.js              # Logique JavaScript, Leaflet et Géolocalisation
 ├── styles.css            # Styles et mise en page
 │
 ├── icons/                # Icônes de l'extension
@@ -104,12 +88,12 @@ extension-carte-ign/
 ├── docs/                 # Documentation
 │   ├── installation.md       # Guide d'installation utilisateur
 │   ├── programmeur.md        # Documentation technique
-│   └── screenshots/          # Captures d'écran
+│   └── screenshots/          # Captures d'écran (extension.png, etc.)
 │
 └── README.md            # Ce fichier
 ```
 
----
+-----
 
 ## 🛠️ Technologies utilisées
 
@@ -121,161 +105,184 @@ extension-carte-ign/
 | HTML5 / CSS3 | - | Interface utilisateur |
 | JavaScript | ES6+ | Logique métier |
 
----
+-----
 
 ## 🔧 Configuration technique
 
-### Service IGN
-- **Endpoint** : `https://wxs.ign.fr/essentiels/geoportail/wmts`
-- **Couche** : `GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2`
-- **Format** : PNG
-- **Projection** : Pseudo-Mercator (EPSG:3857)
+### Services IGN (WMTS)
 
-### Dimensions popup
-- **Largeur** : 600 pixels
-- **Hauteur** : 700 pixels
+Trois couches sont utilisées :
+
+1.  **Plan IGN** : `GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2`
+2.  **Orthophoto** : `ORTHOIMAGERY.ORTHO-HR`
+3.  **Cadastre** : `CADASTRALPARCELS.PARCELS`
+
+<!-- end list -->
+
+  * **Endpoint commun** : `https://wxs.ign.fr/essentiels/geoportail/wmts`
+  * **Projection** : Pseudo-Mercator (EPSG:3857)
 
 ### Permissions requises
-- `storage` : Stockage local (prévu pour futures fonctionnalités)
-- Host : `https://wxs.ign.fr/*` (accès aux tuiles IGN)
 
----
+  - `storage` : Stockage local (prévu pour futures fonctionnalités)
+  - **`geolocation`** : Accès à la position de l'utilisateur (nécessaire pour la géolocalisation)
+  - Host : `https://wxs.ign.fr/*` (accès aux tuiles IGN)
+
+-----
 
 ## 👨‍💻 Documentation programmeur
 
-Pour comprendre le fonctionnement interne, l'architecture et les API utilisées, consultez la [documentation programmeur complète](docs/programmeur.md).
+Pour comprendre le fonctionnement interne, l'architecture et les API utilisées, consultez la [documentation programmeur complète](https://www.google.com/search?q=docs/programmeur.md).
 
 **Sujets couverts :**
-- Architecture de l'extension
-- Détail de chaque fichier
-- API Leaflet utilisées
-- Service WMTS de l'IGN
-- Gestion de la sécurité (CSP)
-- Guide d'amélioration
-- Debugging
 
----
+  - Architecture de l'extension (gestion des options de fond de carte)
+  - Détail de chaque fichier
+  - API Leaflet et gestion des couches (`L.tileLayer`)
+  - Utilisation de l'API `navigator.geolocation`
+  - Gestion de la sécurité (CSP)
+  - Guide d'amélioration
+  - Debugging
+
+-----
 
 ## 🧪 Tests
 
 ### Tests de base
-1. ✅ La carte s'affiche correctement
-2. ✅ Les boutons de navigation fonctionnent
-3. ✅ Le clic place un marqueur
-4. ✅ Les coordonnées se mettent à jour
-5. ✅ Le zoom fonctionne (molette + boutons)
+
+1.  ✅ La carte s'affiche correctement
+2.  ✅ Les boutons de navigation fonctionnent
+3.  ✅ Le clic place un marqueur
+4.  ✅ Les coordonnées se mettent à jour
+5.  ✅ Le zoom fonctionne (molette + boutons)
+
+### Tests de fonctionnalités ajoutées
+
+1.  ✅ Le **sélecteur de fond de carte** fonctionne et affiche les 3 couches IGN
+2.  ✅ La **géolocalisation** centre la carte sur la position (si l'utilisateur autorise)
+3.  ✅ Le fond **Cadastre** affiche les limites de parcelles
+4.  ✅ Le fond **Orthophoto** affiche l'imagerie aérienne
 
 ### Tests de compatibilité
-- Chrome 88+ : ✅ Testé
-- Edge (Chromium) : Compatible (non testé)
-- Autres navigateurs : Non supportés (Manifest V3)
 
----
+  - Chrome 88+ : ✅ Testé
+  - Edge (Chromium) : Compatible (non testé)
+  - Autres navigateurs : Non supportés (Manifest V3)
+
+-----
 
 ## 🐛 Dépannage
 
 ### La carte ne s'affiche pas
-- Vérifiez votre connexion Internet
-- Ouvrez la console Chrome (F12) pour voir les erreurs
-- Rechargez l'extension dans `chrome://extensions/`
+
+  - Vérifiez votre connexion Internet
+  - Ouvrez la console Chrome (F12) pour voir les erreurs
+  - Rechargez l'extension dans `chrome://extensions/`
 
 ### Les tuiles IGN ne chargent pas
-- Le service IGN peut être temporairement indisponible
-- Vérifiez l'URL du service dans `popup.js`
-- Consultez le statut : https://geoservices.ign.fr/
 
-### L'extension n'apparaît pas
-- Vérifiez que le mode développeur est activé
-- Assurez-vous que toutes les icônes sont présentes
-- Validez le fichier `manifest.json`
+  - Le service IGN peut être temporairement indisponible
+  - Vérifiez l'URL du service et le nom des couches dans `popup.js`
+  - Consultez le statut : https://geoservices.ign.fr/
 
----
+### La géolocalisation ne fonctionne pas
+
+  - Assurez-vous d'avoir autorisé Chrome à accéder à votre position
+  - Vérifiez les erreurs dans la console (rejet de permission ou timeout)
+  - La géolocalisation peut être imprécise en intérieur
+
+-----
 
 ## 🚀 Améliorations futures
 
 ### Niveau facile
-- [ ] Géolocalisation de l'utilisateur
-- [ ] Sauvegarde de la dernière position
-- [ ] Plus de villes prédéfinies
-- [ ] Changement de thème (clair/sombre)
+
+  - [ ] Sauvegarde de la dernière position et du fond de carte sélectionné
+  - [ ] Plus de villes prédéfinies
+  - [ ] Changement de thème (clair/sombre)
 
 ### Niveau intermédiaire
-- [ ] Recherche d'adresse (API Adresse.data.gouv.fr)
-- [ ] Sélecteur de fond de carte (Plan / Satellite / Topo)
-- [ ] Mesure de distances
-- [ ] Export de la carte en image
+
+  - [ ] Recherche d'adresse (API Adresse.data.gouv.fr)
+  - [ ] Mesure de distances
+  - [ ] Export de la carte en image
 
 ### Niveau avancé
-- [ ] Import de données GeoJSON
-- [ ] Calcul d'itinéraires
-- [ ] Heatmaps
-- [ ] Mode plein écran dans un onglet
 
----
+  - [ ] Import de données GeoJSON
+  - [ ] Calcul d'itinéraires
+  - [ ] Heatmaps
+  - [ ] Mode plein écran dans un onglet
+
+-----
 
 ## 📚 Ressources
 
 ### Documentation officielle
-- [Leaflet - Documentation](https://leafletjs.com/reference.html)
-- [IGN - Géoservices](https://geoservices.ign.fr/documentation/)
-- [Chrome Extensions - Guide](https://developer.chrome.com/docs/extensions/mv3/)
+
+  - [Leaflet - Documentation](https://leafletjs.com/reference.html)
+  - [IGN - Géoservices](https://geoservices.ign.fr/documentation/)
+  - [Chrome Extensions - Guide](https://developer.chrome.com/docs/extensions/mv3/)
 
 ### Standards utilisés
-- [WMTS - OGC Standard](https://www.ogc.org/standards/wmts)
-- [Manifest V3 - Chrome](https://developer.chrome.com/docs/extensions/mv3/intro/)
 
-### Tutoriels
-- [Leaflet Quick Start](https://leafletjs.com/examples/quick-start/)
-- [Chrome Extensions Tutorial](https://developer.chrome.com/docs/extensions/mv3/getstarted/)
+  - [WMTS - OGC Standard](https://www.ogc.org/standards/wmts)
+  - [Manifest V3 - Chrome](https://developer.chrome.com/docs/extensions/mv3/intro/)
 
----
+-----
 
 ## 👤 Auteur
 
-**[Ton nom]**  
-Projet scolaire - [Année scolaire]
+**[Ton nom]** Projet scolaire - [Année scolaire]
 
----
+-----
 
 ## 📄 Licence
 
 Ce projet est réalisé dans un cadre éducatif.
 
 **Crédits :**
-- Cartes : © [IGN](https://www.ign.fr/) - Géoportail
-- Bibliothèque : [Leaflet](https://leafletjs.com/) (BSD 2-Clause License)
 
----
+  - Cartes : © [IGN](https://www.ign.fr/) - Géoportail
+  - Bibliothèque : [Leaflet](https://leafletjs.com/) (BSD 2-Clause License)
+
+-----
 
 ## 🎓 Contexte académique
 
 Ce projet répond à un exercice scolaire visant à :
-1. Démontrer la faisabilité d'une carte interactive dans une extension
-2. Consommer un service web (WMTS de l'IGN)
-3. Produire une documentation complète (installation + programmeur)
-4. Fournir des visuels de démonstration
+
+1.  Démontrer la faisabilité d'une carte interactive dans une extension
+2.  Consommer plusieurs services web (WMTS de l'IGN)
+3.  Intégrer la géolocalisation
+4.  Produire une documentation complète (installation + programmeur)
+5.  Fournir des visuels de démonstration
 
 **Livrables :**
-- ✅ Code source complet et fonctionnel
-- ✅ Documentation d'installation (pour utilisateurs)
-- ✅ Documentation programmeur (technique)
-- ✅ Captures d'écran et visuels
-- ✅ Journal d'avancement
 
----
+  - ✅ Code source complet et fonctionnel
+  - ✅ Documentation d'installation (pour utilisateurs)
+  - ✅ Documentation programmeur (technique)
+  - ✅ Captures d'écran et visuels
+  - ✅ Journal d'avancement
+
+-----
 
 ## ⭐ Remerciements
 
-- **IGN** pour la mise à disposition gratuite des services cartographiques
-- **Leaflet** pour la bibliothèque open-source
-- **Chrome Team** pour la documentation claire
+  - **IGN** pour la mise à disposition gratuite des services cartographiques
+  - **Leaflet** pour la bibliothèque open-source
+  - **Chrome Team** pour la documentation claire
 
----
+-----
 
-<div align="center">
+\<div align="center"\>
 
 **Projet réalisé avec ❤️ et 🗺️**
 
-[⬆ Retour en haut](#-extension-chrome---carte-interactive-ign)
+[⬆ Retour en haut](https://www.google.com/search?q=%23-extension-chrome---carte-interactive-ign)
 
-</div>
+\</div\>
+
+```
+```
