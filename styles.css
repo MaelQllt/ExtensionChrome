@@ -1,14 +1,17 @@
+/* --- RESET --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* --- BASE IGN --- */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
     width: 600px;
     height: 700px;
-    background: #f5f5f5;
+    background: #f3f3f3; /* gris très clair IGN */
+    color: #2b2b2b;
 }
 
 .container {
@@ -17,25 +20,26 @@ body {
     height: 100%;
 }
 
+/* --- HEADER STYLE IGN --- */
 header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 15px 20px;
+    background: white;
+    padding: 18px 20px;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-bottom: 1px solid #e0e0e0;
 }
 
 h1 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
-    margin-bottom: 5px;
+    color: #1f8a5b; /* Vert IGN */
 }
 
 .subtitle {
-    font-size: 12px;
-    opacity: 0.9;
+    font-size: 13px;
+    color: #555;
 }
 
+/* --- CONTROLES (blanc + contour gris IGN) --- */
 .controls {
     display: flex;
     gap: 10px;
@@ -44,72 +48,99 @@ h1 {
     border-bottom: 1px solid #e0e0e0;
 }
 
+/* Boutons style IGN (verts) */
 .btn {
     flex: 1;
     padding: 10px;
-    border: none;
-    background: #667eea;
+    border: 1px solid #2faF74;
+    background: #2faF74; /* Vert IGN */
     color: white;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: 0.2s ease;
 }
 
 .btn:hover {
-    background: #764ba2;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background: #1f8a5b;
+    border-color: #1f8a5b;
 }
 
-.btn:active {
-    transform: translateY(0);
+.select-ign {
+    padding: 9px;
+    border-radius: 4px;
+    border: 1px solid #d0d0d0;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    flex: 1;
+    color: #2b2b2b;
 }
 
+.select-ign:hover {
+    border-color: #1f8a5b;
+}
+
+
+/* --- MAP --- */
 #map {
     flex: 1;
-    width: 100%;
-    background: #e0e0e0;
+    background: #e5e5e5; /* gris clair IGN */
 }
 
+/* --- FOOTER (blanc + fin trait gris) --- */
 footer {
     background: white;
     padding: 12px 20px;
     border-top: 1px solid #e0e0e0;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
 }
 
 .info {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #666;
-    font-family: 'Courier New', monospace;
+    color: #444;
+    font-family: "Courier New", monospace;
 }
 
 .info span {
-    padding: 5px 10px;
-    background: #f5f5f5;
-    border-radius: 4px;
+    padding: 5px 8px;
+    background: #f3f3f3;
+    border-radius: 3px;
 }
 
-/* Personnalisation des contrôles Leaflet */
+/* --- CONTROLES LEAFLET (sobre, blanc, carrés) --- */
 .leaflet-control-zoom {
-    border: none !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    border: 1px solid #dcdcdc !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
 }
 
 .leaflet-control-zoom a {
-    color: #667eea !important;
+    background: white !important;
+    color: #1f8a5b !important; /* vert IGN */
     font-weight: bold !important;
+    border-bottom: 1px solid #dcdcdc !important;
 }
 
+.leaflet-control-zoom a:last-child {
+    border-bottom: none !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background: #e9f6f0 !important; /* léger vert pâle */
+}
+
+/* --- Popup IGN --- */
 .leaflet-popup-content-wrapper {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: white;
+    border: 1px solid #dcdcdc;
+    border-radius: 3px;
 }
 
 .leaflet-popup-tip {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: white;
+    border: 1px solid #dcdcdc;
 }
+

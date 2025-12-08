@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte IGN Interactive</title>
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet CSS (LOCAL) -->
+    <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
     
     <!-- Styles personnalisés -->
     <link rel="stylesheet" href="styles.css">
@@ -19,9 +19,16 @@
         </header>
         
         <div class="controls">
-            <button id="btnParis" class="btn">📍 Paris</button>
-            <button id="btnLyon" class="btn">📍 Lyon</button>
-            <button id="btnMarseille" class="btn">📍 Marseille</button>
+            <select id="basemapSelector" class="select-ign">
+                <option value="plan">Plan IGN</option>
+                <option value="ortho">Orthophotos</option>
+                <option value="cadastre">Cadastre</option>
+            </select>
+            
+            <button id="btnMyPosition" class="btn">Ma position</button>
+            <button id="btnParis" class="btn">Paris</button>
+            <button id="btnLyon" class="btn">Lyon</button>
+            <button id="btnMarseille" class="btn">Marseille</button>
         </div>
         
         <div id="map"></div>
@@ -34,8 +41,8 @@
         </footer>
     </div>
     
-    <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet JavaScript (LOCAL) -->
+    <script src="lib/leaflet/leaflet.js"></script>
     
     <!-- Script de l'extension -->
     <script src="popup.js"></script>
