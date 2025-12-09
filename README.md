@@ -53,45 +53,30 @@
 
 1. **Télécharger le projet**
    ```bash
-   # Cloner ou télécharger le dossier complet
-2.  **Charger l'extension**
+   # Cloner ou télécharger le dossier complet : https://github.com/MaelQllt/ExtensionChrome.git
+   ````
+
+
+2.  **Créer les icônes**
+
+      - Placez 3 icônes PNG dans le dossier `icons/` :
+          - `icon16.png` (16×16 pixels)
+          - `icon48.png` (48×48 pixels)
+          - `icon128.png` (128×128 pixels)
+
+3.  **Charger l'extension**
 
       - Ouvrez Chrome : `chrome://extensions/`
       - Activez le "**Mode développeur**"
       - Cliquez "**Charger l'extension non empaquetée**"
       - Sélectionnez le dossier du projet
 
-3.  **Utiliser l'extension**
+4.  **Utiliser l'extension**
 
       - Cliquez sur l'icône de l'extension dans la barre d'outils
       - La carte s'affiche dans un popup
 
-📖 **Documentation complète** : Consultez [docs/installation.md](https://www.google.com/search?q=docs/installation.md)
-
------
-
-## 📁 Structure du projet
-
-```
-extension-carte-ign/
-│
-├── manifest.json          # Configuration de l'extension (Manifest V3)
-├── popup.html            # Interface utilisateur du popup (avec sélecteur de fonds)
-├── popup.js              # Logique JavaScript, Leaflet et Géolocalisation
-├── styles.css            # Styles et mise en page
-│
-├── icons/                # Icônes de l'extension
-│   ├── icon16.png
-│   ├── icon48.png
-│   └── icon128.png
-│
-├── docs/                 # Documentation
-│   ├── installation.md       # Guide d'installation utilisateur
-│   ├── programmeur.md        # Documentation technique
-│   └── screenshots/          # Captures d'écran (extension.png, etc.)
-│
-└── README.md            # Ce fichier
-```
+Vous pouvez consultez la [documentation d'installation complète](docs/installation.md#installation).
 
 -----
 
@@ -117,22 +102,18 @@ Trois couches sont utilisées :
 2.  **Orthophoto** : `ORTHOIMAGERY.ORTHO-HR`
 3.  **Cadastre** : `CADASTRALPARCELS.PARCELS`
 
-<!-- end list -->
-
-  * **Endpoint commun** : `https://wxs.ign.fr/essentiels/geoportail/wmts`
-  * **Projection** : Pseudo-Mercator (EPSG:3857)
-
 ### Permissions requises
 
   - `storage` : Stockage local (prévu pour futures fonctionnalités)
   - **`geolocation`** : Accès à la position de l'utilisateur (nécessaire pour la géolocalisation)
-  - Host : `https://wxs.ign.fr/*` (accès aux tuiles IGN)
+  - Host : `https://data.geopf.fr/*` (accès aux tuiles IGN)
 
 -----
 
 ## 👨‍💻 Documentation programmeur
 
-Pour comprendre le fonctionnement interne, l'architecture et les API utilisées, consultez la [documentation programmeur complète](https://www.google.com/search?q=docs/programmeur.md).
+Pour comprendre le fonctionnement interne, l'architecture et les API utilisées, consultez la [documentation programmeur complète](docs/programmeur.md#programmeur).
+
 
 **Sujets couverts :**
 
@@ -146,75 +127,7 @@ Pour comprendre le fonctionnement interne, l'architecture et les API utilisées,
 
 -----
 
-## 🧪 Tests
 
-### Tests de base
-
-1.  ✅ La carte s'affiche correctement
-2.  ✅ Les boutons de navigation fonctionnent
-3.  ✅ Le clic place un marqueur
-4.  ✅ Les coordonnées se mettent à jour
-5.  ✅ Le zoom fonctionne (molette + boutons)
-
-### Tests de fonctionnalités ajoutées
-
-1.  ✅ Le **sélecteur de fond de carte** fonctionne et affiche les 3 couches IGN
-2.  ✅ La **géolocalisation** centre la carte sur la position (si l'utilisateur autorise)
-3.  ✅ Le fond **Cadastre** affiche les limites de parcelles
-4.  ✅ Le fond **Orthophoto** affiche l'imagerie aérienne
-
-### Tests de compatibilité
-
-  - Chrome 88+ : ✅ Testé
-  - Edge (Chromium) : Compatible (non testé)
-  - Autres navigateurs : Non supportés (Manifest V3)
-
------
-
-## 🐛 Dépannage
-
-### La carte ne s'affiche pas
-
-  - Vérifiez votre connexion Internet
-  - Ouvrez la console Chrome (F12) pour voir les erreurs
-  - Rechargez l'extension dans `chrome://extensions/`
-
-### Les tuiles IGN ne chargent pas
-
-  - Le service IGN peut être temporairement indisponible
-  - Vérifiez l'URL du service et le nom des couches dans `popup.js`
-  - Consultez le statut : https://geoservices.ign.fr/
-
-### La géolocalisation ne fonctionne pas
-
-  - Assurez-vous d'avoir autorisé Chrome à accéder à votre position
-  - Vérifiez les erreurs dans la console (rejet de permission ou timeout)
-  - La géolocalisation peut être imprécise en intérieur
-
------
-
-## 🚀 Améliorations futures
-
-### Niveau facile
-
-  - [ ] Sauvegarde de la dernière position et du fond de carte sélectionné
-  - [ ] Plus de villes prédéfinies
-  - [ ] Changement de thème (clair/sombre)
-
-### Niveau intermédiaire
-
-  - [ ] Recherche d'adresse (API Adresse.data.gouv.fr)
-  - [ ] Mesure de distances
-  - [ ] Export de la carte en image
-
-### Niveau avancé
-
-  - [ ] Import de données GeoJSON
-  - [ ] Calcul d'itinéraires
-  - [ ] Heatmaps
-  - [ ] Mode plein écran dans un onglet
-
------
 
 ## 📚 Ressources
 
@@ -233,7 +146,7 @@ Pour comprendre le fonctionnement interne, l'architecture et les API utilisées,
 
 ## 👤 Auteur
 
-**[Ton nom]** Projet scolaire - [Année scolaire]
+**Maël QUILLAT** Projet scolaire - ENSG Carthagéo 2025-2026
 
 -----
 
@@ -258,31 +171,5 @@ Ce projet répond à un exercice scolaire visant à :
 4.  Produire une documentation complète (installation + programmeur)
 5.  Fournir des visuels de démonstration
 
-**Livrables :**
-
-  - ✅ Code source complet et fonctionnel
-  - ✅ Documentation d'installation (pour utilisateurs)
-  - ✅ Documentation programmeur (technique)
-  - ✅ Captures d'écran et visuels
-  - ✅ Journal d'avancement
-
 -----
 
-## ⭐ Remerciements
-
-  - **IGN** pour la mise à disposition gratuite des services cartographiques
-  - **Leaflet** pour la bibliothèque open-source
-  - **Chrome Team** pour la documentation claire
-
------
-
-\<div align="center"\>
-
-**Projet réalisé avec ❤️ et 🗺️**
-
-[⬆ Retour en haut](https://www.google.com/search?q=%23-extension-chrome---carte-interactive-ign)
-
-\</div\>
-
-```
-```

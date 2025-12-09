@@ -1,154 +1,154 @@
-# 📦 Guide d'Installation - Extension Carte IGN Interactive
+# 📦 Guide d'Installation Utilisateur - Extension Carte IGN Interactive
 
-## Prérequis
+## ℹ️ Prérequis
 
-- Google Chrome (version 88 ou supérieure)
-- Une connexion Internet pour charger les tuiles de carte
-- Aucune compétence technique requise pour l'installation
+* **Navigateur :** Google Chrome (version 88 ou supérieure)
+* **Connexion :** Internet (nécessaire pour charger les tuiles WMTS de l'IGN)
+* **Compétence :** Aucune compétence technique requise pour l'installation
 
 ---
 
-## 🚀 Installation pas à pas
+## 🚀 Étape 1 : Préparation des Fichiers et de la Structure
 
-### Étape 1 : Télécharger les fichiers
+### 1. Télécharger et Organiser les Fichiers
 
-1. Téléchargez tous les fichiers du projet
-2. Créez un dossier nommé `extension-carte-ign` sur votre bureau
-3. Placez tous les fichiers dans ce dossier selon cette structure :
+Téléchargez tous les fichiers du projet et placez-les dans un nouveau dossier nommé, par exemple, `extension-carte-ign`.
+
+### 2. Structure de Dossiers
+
+Assurez-vous que la structure de votre dossier ressemble à ceci, en incluant le dossier de la bibliothèque Leaflet et le dossier des icônes:
 
 ```
+
 extension-carte-ign/
 ├── manifest.json
 ├── popup.html
 ├── popup.js
 ├── styles.css
-└── icons/
-    ├── icon16.png
-    ├── icon48.png
-    └── icon128.png
+├── icons/
+│   ├── icon16.png
+│   ├── icon48.png
+│   └── icon128.png
+└── lib/
+     └── leaflet/
+     ├── leaflet.css
+     └── leaflet.js
+
 ```
 
-### Étape 2 : Créer les icônes
+### 3. Création des Icônes
 
-**Important :** Vous devez créer 3 icônes aux dimensions suivantes :
-- `icon16.png` : 16x16 pixels
-- `icon48.png` : 48x48 pixels  
-- `icon128.png` : 128x128 pixels
+Les icônes sont obligatoires pour Manifest V3. Vous devez créer ou trouver les trois fichiers PNG suivants et les placer dans le dossier `icons/`:
+* `icon16.png` : **16x16 pixels**
+* `icon48.png` : **48x48 pixels**
+* `icon128.png` : **128x128 pixels**
 
-**Astuce :** Vous pouvez utiliser un générateur d'icônes en ligne ou créer une icône simple avec un fond coloré et une lettre "C" (pour Carte).
-
-### Étape 3 : Charger l'extension dans Chrome
-
-1. **Ouvrir Chrome** et accéder aux extensions :
-   - Tapez dans la barre d'adresse : `chrome://extensions/`
-   - Ou via Menu (⋮) → Plus d'outils → Extensions
-
-2. **Activer le mode développeur** :
-   - En haut à droite, activez le bouton "Mode développeur"
-
-3. **Charger l'extension** :
-   - Cliquez sur "Charger l'extension non empaquetée"
-   - Sélectionnez le dossier `extension-carte-ign`
-   - Cliquez sur "Sélectionner le dossier"
-
-4. **Vérification** :
-   - L'extension apparaît dans la liste
-   - Une icône devrait s'afficher dans la barre d'outils Chrome
-
-### Étape 4 : Épingler l'extension (optionnel)
-
-1. Cliquez sur l'icône puzzle (🧩) dans la barre d'outils
-2. Trouvez "Carte Interactive IGN"
-3. Cliquez sur l'épingle (📌) pour la garder visible
+Par défaut il existe déjà une icône.
 
 ---
 
-## ✅ Test de fonctionnement
+## 💻 Étape 2 : Charger l'Extension dans Chrome
 
-### Test 1 : Ouverture de l'extension
-- Cliquez sur l'icône de l'extension
-- Une fenêtre popup devrait s'ouvrir (600x700 pixels)
-- Une carte centrée sur Paris devrait s'afficher
+Cette extension doit être chargée en mode développeur.
 
-### Test 2 : Navigation
-- Cliquez sur les boutons "Paris", "Lyon", "Marseille"
-- La carte devrait se déplacer vers la ville sélectionnée avec une animation fluide
+1.  **Ouvrez la page des extensions** :
+    * Tapez `chrome://extensions/` dans la barre d'adresse.
+2.  **Activez le Mode Développeur** :
+    * En haut à droite de la page, basculez le bouton "**Mode développeur**" sur Activé.
+3.  **Chargez le Projet** :
+    * Cliquez sur le bouton "**Charger l'extension non empaquetée**".
+    * Sélectionnez le dossier racine de votre projet (`extension-carte-ign`).
 
-### Test 3 : Interaction
-- Cliquez n'importe où sur la carte
-- Un marqueur devrait apparaître avec les coordonnées
-- Zoomez avec la molette ou les boutons +/-
-- Les coordonnées en bas devraient se mettre à jour
+**Vérification :** L'extension intitulée "Carte Interactive IGN" doit apparaître dans la liste avec un statut "Activé".
 
----
+### Étape 3 : Utilisation et Épinglage (Optionnel)
 
-## ❌ Dépannage
-
-### Problème : La carte ne s'affiche pas
-**Solution :** 
-- Vérifiez votre connexion Internet
-- Ouvrez la console (F12) et regardez les erreurs
-- Vérifiez que le fichier `manifest.json` est correct
-
-### Problème : L'extension n'apparaît pas
-**Solution :**
-- Vérifiez que le mode développeur est activé
-- Rechargez l'extension (bouton 🔄 dans chrome://extensions/)
-- Vérifiez que toutes les icônes sont présentes dans le dossier `icons/`
-
-### Problème : Erreur CSP (Content Security Policy)
-**Solution :**
-- Vérifiez que le `manifest.json` contient bien la section `content_security_policy`
-- Assurez-vous d'utiliser les CDN autorisés (unpkg.com)
-
-### Problème : Les tuiles IGN ne chargent pas
-**Solution :**
-- Vérifiez l'URL du service IGN dans `popup.js`
-- Testez l'URL directement dans un navigateur
-- Les services IGN peuvent occasionnellement être en maintenance
+1.  Cliquez sur l'icône puzzle (🧩) dans la barre d'outils Chrome.
+2.  Trouvez "**Carte Interactive IGN**" et cliquez sur l'icône épingle (📌) pour la rendre visible en permanence.
+3.  Cliquez sur l'icône de l'extension pour ouvrir la carte interactive dans un popup.
 
 ---
 
-## 🔄 Mise à jour de l'extension
+## ✅ Test de Fonctionnement
 
-Pour modifier l'extension :
+Effectuez ces tests rapides pour valider l'installation :
 
-1. Modifiez les fichiers sources
-2. Retournez sur `chrome://extensions/`
-3. Cliquez sur le bouton "Recharger" (🔄) sous votre extension
-4. Testez les modifications
-
----
-
-## 📊 Captures d'écran recommandées
-
-Pour votre documentation, prenez des captures d'écran de :
-
-1. **L'installation** : La page chrome://extensions/ avec votre extension
-2. **Vue d'ensemble** : L'extension ouverte sur Paris
-3. **Navigation** : Animation vers une autre ville
-4. **Interaction** : Un marqueur placé sur la carte
-5. **Informations** : Le footer avec les coordonnées actualisées
+| Test | Action | Résultat attendu |
+| :--- | :--- | :--- |
+| **Ouverture** | Cliquez sur l'icône de l'extension. | Une fenêtre popup (600x700 pixels) s'ouvre avec une carte centrée sur Paris. |
+| **Navigation** | Cliquez sur les boutons **Paris**, **Lyon**, ou **Marseille**. | La carte se déplace vers la ville sélectionnée avec une animation fluide. |
+| **Localisation** | Cliquez sur le bouton **Ma position** | Si vous avez autorisé Chrome à accéder à votre position, la couche se centre sur vos position actuelle. |
+| **Interaction** | Cliquez n'importe où sur la carte. | Un marqueur apparaît, et les coordonnées du clic s'affichent. |
+| **Navigation** | Utilisez l'itinéraire. | L'itinéraire le plus court apparait entre les deux points (départ et arrivée). |
+| **Informations** | Déplacez et zoomez sur la carte. | Les coordonnées (Lat/Lon) et le niveau de zoom dans le footer se mettent à jour. |
+| **Changement de fond** | Utilisez le sélecteur de fonds de carte. | La couche cartographique doit basculer entre Plan IGN, Orthophotos et Cadastre. |
 
 ---
 
-## 📝 Informations techniques
+## ❌ Dépannage Courant
 
-- **Taille du popup** : 600x700 pixels
-- **Service cartographique** : IGN Géoportail WMTS
-- **Couche utilisée** : GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2
-- **Bibliothèque** : Leaflet 1.9.4
-- **Format des tuiles** : PNG
-- **Projection** : Web Mercator (EPSG:3857)
+| Problème | Cause Possible | Solution |
+| :--- | :--- | :--- |
+| **Carte ne s'affiche pas** | Problème de chargement des fichiers Leaflet ou IGN. | Vérifiez la console (F12) pour les erreurs. Assurez-vous que les fichiers `leaflet.css` et `leaflet.js` sont bien dans le dossier `lib/leaflet/`. |
+| **Erreur CSP (Security)** | Manque d'autorisation pour les sources externes (IGN). | Vérifiez que les domaines IGN sont listés dans `host_permissions` et `content_security_policy` dans `manifest.json`. |
+| **Tuiles IGN ne chargent pas** | URL du service incorrecte ou maintenance IGN. | Vérifiez l'URL WMTS dans `popup.js`. Testez une URL de tuile directement dans le navigateur. |
+| **Extension n'apparaît pas** | Mode développeur désactivé ou fichiers manquants. | Activez le mode développeur et vérifiez que les icônes (`icons/`) sont présentes. |
 
 ---
 
-## ✨ Fonctionnalités
+## 🔄 Mise à Jour ou Modification
 
-✅ Affichage d'une carte interactive  
-✅ Fond de carte IGN officiel  
-✅ Navigation vers 3 villes françaises  
-✅ Placement de marqueurs au clic  
-✅ Affichage des coordonnées en temps réel  
-✅ Zoom et déplacement fluides  
-✅ Interface moderne et responsive
+Pour mettre à jour le code de l'extension (par exemple, après avoir modifié `popup.js` ou `styles.css`) :
+
+1.  Modifiez les fichiers sources.
+2.  Retournez sur `chrome://extensions/`.
+3.  Cliquez sur le bouton **"Recharger" (🔄)** sous votre extension.
+4.  Testez les modifications dans le popup.
+
+---
+
+# Cas où Chrome n'est pas autorisé à utiliser votre position
+
+## 📍 Autoriser l'Accès à la Position (Réglages Système)
+
+Pour que l'extension **"Carte Interactive IGN"** puisse utiliser le bouton **"Ma position"**, deux niveaux d'autorisation sont requis :
+
+1.  L'autorisation du **navigateur** (Chrome) à utiliser la géolocalisation (généralement demandée au premier clic).
+2.  L'autorisation du **système d'exploitation** (Windows/macOS/Linux) à accorder l'accès à Chrome.
+
+Si le bouton "Ma position" ne fonctionne pas et que vous recevez un message d'erreur de permission, vous devez vérifier les paramètres de votre machine.
+
+---
+
+### 1. Sur Windows 🖥️
+
+1.  Ouvrez les **Paramètres** de Windows (touche Windows + `I`).
+2.  Allez dans la section **Confidentialité et sécurité**.
+3.  Dans le menu de gauche, sélectionnez **Localisation** (ou **Emplacement**).
+4.  Assurez-vous que l'option **"Accès à la localisation"** ou **"Service de localisation"** est **Activée**.
+5.  Faites défiler jusqu'à la liste **"Autoriser les applications à accéder à votre localisation"**.
+6.  Vérifiez que **Google Chrome** figure dans la liste et que l'interrupteur est **Activé**.
+
+---
+
+### 2. Sur macOS 🍎
+
+1.  Ouvrez les **Réglages Système** (via le menu Apple ).
+2.  Cliquez sur **Confidentialité et sécurité**.
+3.  Sélectionnez **Service de localisation** dans la liste de gauche.
+4.  Assurez-vous que le **Service de localisation** général est **Activé**.
+5.  Faites défiler la liste des applications et assurez-vous que la case à côté de **Google Chrome** est **cochée**.
+6.  Redémarrez Chrome pour appliquer les changements.
+
+---
+
+### 3. Dans Chrome (Réglages de l'Extension) 🔒
+
+Même si le système autorise Chrome, vous devez vous assurer que Chrome autorise l'extension :
+
+1.  Ouvrez le **popup de l'extension** en cliquant sur son icône.
+2.  Cliquez sur le bouton **"Ma position"** pour déclencher la demande.
+3.  Si une petite icône **cadenas (🔒)** ou une icône **viseur (🎯)** apparaît dans la barre d'adresse de Chrome, cliquez dessus.
+4.  Dans le menu contextuel, assurez-vous que le paramètre **"Position"** est réglé sur **"Autoriser"** ou **"Demander (par défaut)"**.
+
+> **Note :** Si l'accès à la position a été refusé de manière permanente, vous pourriez devoir supprimer le marqueur de refus dans les réglages de Chrome pour que l'invite d'autorisation réapparaisse.

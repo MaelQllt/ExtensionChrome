@@ -18,6 +18,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: white;
 }
 
 /* --- HEADER STYLE IGN --- */
@@ -46,14 +47,16 @@ h1 {
     padding: 15px;
     background: white;
     border-bottom: 1px solid #e0e0e0;
+    flex-wrap: wrap;
 }
 
 /* Boutons style IGN (verts) */
 .btn {
     flex: 1;
+    min-width: 90px;
     padding: 10px;
-    border: 1px solid #2faF74;
-    background: #2faF74; /* Vert IGN */
+    border: 1px solid #2faf74;
+    background: #2faf74; /* Vert IGN */
     color: white;
     border-radius: 4px;
     cursor: pointer;
@@ -67,6 +70,15 @@ h1 {
     border-color: #1f8a5b;
 }
 
+.btn-primary {
+    background: #2faf74;
+    border-color: #2faf74;
+}
+
+.btn-primary:hover {
+    background: #1f8a5b;
+}
+
 .select-ign {
     padding: 9px;
     border-radius: 4px;
@@ -75,6 +87,7 @@ h1 {
     font-size: 14px;
     cursor: pointer;
     flex: 1;
+    min-width: 120px;
     color: #2b2b2b;
 }
 
@@ -82,11 +95,220 @@ h1 {
     border-color: #1f8a5b;
 }
 
+.select-ign:focus {
+    outline: none;
+    border-color: #1f8a5b;
+}
+
+/* --- PANNEAU D'ITINÉRAIRE --- */
+.route-panel {
+    position: absolute;
+    top: 160px;
+    right: 20px;
+    width: 320px;
+    background: white;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.route-panel.hidden {
+    display: none;
+}
+
+.route-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #1f8a5b;
+    color: white;
+    border-radius: 4px 4px 0 0;
+}
+
+.route-header h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: background 0.2s;
+    line-height: 1;
+}
+
+.btn-close:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.route-inputs {
+    padding: 15px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #2b2b2b;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border 0.2s;
+    background: white;
+    color: #2b2b2b;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: #1f8a5b;
+}
+
+.input-group input::placeholder {
+    color: #999;
+}
+
+.btn-small {
+    margin-top: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+    background: #2faf74;
+    color: white;
+    border: 1px solid #2faf74;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+}
+
+.btn-small:hover {
+    background: #1f8a5b;
+    border-color: #1f8a5b;
+}
+
+.btn-calculate {
+    width: 100%;
+    padding: 12px;
+    background: #2faf74;
+    border-color: #2faf74;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.btn-calculate:hover {
+    background: #1f8a5b;
+    border-color: #1f8a5b;
+}
+
+.btn-clear {
+    width: 100%;
+    padding: 10px;
+    background: #e74c3c;
+    border: 1px solid #e74c3c;
+    margin-top: 8px;
+}
+
+.btn-clear:hover {
+    background: #c0392b;
+    border-color: #c0392b;
+}
+
+.route-info {
+    padding: 15px;
+    background: #f9f9f9;
+    border-top: 1px solid #e0e0e0;
+}
+
+.route-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #2b2b2b;
+}
+
+#routeDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.route-option {
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.route-option:hover {
+    border-color: #2196F3;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
+}
+
+.route-option.route-main {
+    border-color: #2196F3;
+    background: #e3f2fd;
+}
+
+.route-option.route-alt {
+    border-color: #e0e0e0;
+    opacity: 0.9;
+}
+
+.route-option-header {
+    font-weight: 600;
+    font-size: 13px;
+    color: #2b2b2b;
+    margin-bottom: 6px;
+}
+
+.route-option.route-main .route-option-header {
+    color: #2196F3;
+}
+
+.route-option-details {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #555;
+}
+
+.route-option-details span {
+    flex: 1;
+}
 
 /* --- MAP --- */
 #map {
     flex: 1;
     background: #e5e5e5; /* gris clair IGN */
+    position: relative;
 }
 
 /* --- FOOTER (blanc + fin trait gris) --- */
@@ -144,3 +366,20 @@ footer {
     border: 1px solid #dcdcdc;
 }
 
+/* --- Scrollbar panneau --- */
+.route-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.route-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.route-panel::-webkit-scrollbar-thumb {
+    background: #1f8a5b;
+    border-radius: 3px;
+}
+
+.route-panel::-webkit-scrollbar-thumb:hover {
+    background: #165d41;
+}

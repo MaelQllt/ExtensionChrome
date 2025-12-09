@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte IGN Interactive</title>
-    
     <!-- Leaflet CSS (LOCAL) -->
     <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
-    
     <!-- Styles personnalisés -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -25,10 +23,45 @@
                 <option value="cadastre">Cadastre</option>
             </select>
             
-            <button id="btnMyPosition" class="btn">Ma position</button>
+            <button id="btnMyPosition" class="btn">📍 Ma position</button>
             <button id="btnParis" class="btn">Paris</button>
             <button id="btnLyon" class="btn">Lyon</button>
             <button id="btnMarseille" class="btn">Marseille</button>
+            <button id="btnRoute" class="btn btn-primary">🚗 Itinéraire</button>
+        </div>
+
+        <!-- Panneau d'itinéraire (caché par défaut) -->
+        <div id="routePanel" class="route-panel hidden">
+            <div class="route-header">
+                <h3>📍 Calculer un itinéraire</h3>
+                <button id="closeRoutePanel" class="btn-close">×</button>
+            </div>
+            <div class="route-inputs">
+                <div class="input-group">
+                    <label>🟢 Départ</label>
+                    <input type="text" id="startInput" placeholder="Adresse de départ">
+                    <button id="btnSetStart" class="btn-small">📍 Cliquer sur carte</button>
+                </div>
+                <div class="input-group">
+                    <label>🔴 Arrivée</label>
+                    <input type="text" id="endInput" placeholder="Adresse d'arrivée">
+                    <button id="btnSetEnd" class="btn-small">📍 Cliquer sur carte</button>
+                </div>
+                <div class="input-group">
+                    <label>🚗 Mode de transport</label>
+                    <select id="travelMode" class="select-ign">
+                        <option value="DRIVING">🚗 Voiture</option>
+                        <option value="WALKING">🚶 À pied</option>
+                        <option value="BICYCLING">🚴 Vélo</option>
+                    </select>
+                </div>
+                <button id="btnCalculate" class="btn btn-calculate">Calculer l'itinéraire</button>
+                <button id="btnClearRoute" class="btn btn-clear hidden">🗑️ Effacer</button>
+            </div>
+            <div id="routeInfo" class="route-info hidden">
+                <h4>📊 Résumé du trajet</h4>
+                <div id="routeDetails"></div>
+            </div>
         </div>
         
         <div id="map"></div>

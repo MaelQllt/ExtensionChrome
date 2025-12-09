@@ -1,15 +1,17 @@
 {
   "manifest_version": 3,
   "name": "Carte Interactive IGN",
-  "version": "1.0.0",
-  "description": "Extension Chrome affichant une carte interactive Leaflet avec les données de l'IGN",
+  "version": "1.1.0",
+  "description": "Extension Chrome affichant une carte interactive Leaflet avec les données de l'IGN et calcul d'itinéraires",
   "permissions": [
     "storage",
     "geolocation"
   ],
   "host_permissions": [
     "https://wxs.ign.fr/*",
-    "https://data.geopf.fr/*"
+    "https://data.geopf.fr/*",
+    "https://router.project-osrm.org/*",
+    "https://nominatim.openstreetmap.org/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -25,6 +27,6 @@
     "128": "icons/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data: https://wxs.ign.fr https://*.openstreetmap.org https://data.geopf.fr; style-src 'self' 'unsafe-inline';"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://wxs.ign.fr https://data.geopf.fr https://router.project-osrm.org https://nominatim.openstreetmap.org https://*.openstreetmap.org; img-src 'self' data: https://wxs.ign.fr https://*.openstreetmap.org https://data.geopf.fr; style-src 'self' 'unsafe-inline';"
   }
 }
