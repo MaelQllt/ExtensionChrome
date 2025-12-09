@@ -383,3 +383,52 @@ footer {
 .route-panel::-webkit-scrollbar-thumb:hover {
     background: #165d41;
 }
+
+
+/* NOUVEAUX STYLES POUR L'AUTO-COMPLÉTION */
+
+/* Le conteneur parent doit être en position relative pour que le dropdown soit absolu */
+.input-group.search-container {
+    position: relative; 
+    z-index: 1000; /* Assure que le dropdown est au-dessus de la carte */
+}
+
+/* Style de la liste déroulante des suggestions */
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%; /* Positionné juste en dessous du champ de saisie */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1001; /* Doit être au-dessus du conteneur parent */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: none;
+    box-sizing: border-box; /* S'assurer que padding/border n'augmente pas la taille totale */
+}
+
+/* Style de chaque élément de suggestion */
+.suggestion-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ajouter des points de suspension si l'adresse est trop longue */
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+    color: #2196F3;
+}

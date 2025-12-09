@@ -21,16 +21,15 @@
 
 ## ✨ Fonctionnalités
 
-* 🗺️ **Carte interactive** : Zoom, déplacement, navigation fluide
-* 🇫🇷 **Fonds de carte IGN sélectionnables** : Choisissez entre :
-    * **Plan IGN V2** (Plan de base)
-    * **Orthophotographie** (Vue satellite)
-    * **Parcelles Cadastrales** (Limites de propriété)
-* 📍 **Géolocalisation** : Centrage automatique sur votre position actuelle (avec autorisation de Chrome)
-* 📍 **Navigation rapide** : Boutons vers Paris, Lyon, Marseille
-* 🖱️ **Marqueurs interactifs** : Cliquez sur la carte pour placer un marqueur
-* 📊 **Informations temps réel** : Coordonnées et niveau de zoom actualisés
-* 🎨 **Interface moderne** : Design épuré avec animations
+  * 🗺️ **Carte interactive** : Zoom, déplacement, navigation fluide
+  * 🇫🇷 **Fonds de carte IGN sélectionnables** : Choisissez entre Plan IGN V2, Orthophotographie et Parcelles Cadastrales.
+  * 🚗 **Calcul d'itinéraires** : Intégration OSRM pour le routage (voiture, vélo, marche) avec affichage d'alternatives.
+  * 📍 **Géocodage** : Recherche d'adresses textuelles (Départ/Arrivée) via l'API Nominatim.
+  * 📍 **Géolocalisation** : Centrage automatique sur votre position actuelle (avec autorisation de Chrome).
+  * 📍 **Navigation rapide** : Boutons vers Paris, Lyon, Marseille
+  * 🖱️ **Marqueurs interactifs** : Placement de marqueur au clic et sélection de points d'itinéraire A/B.
+  * 📊 **Informations temps réel** : Coordonnées et niveau de zoom actualisés
+
 
 ---
 
@@ -46,16 +45,17 @@
 ## 🚀 Installation rapide
 
 ### Prérequis
-- Google Chrome (version 88+)
-- Connexion Internet
+
+  - Google Chrome (version 88+)
+  - Connexion Internet
 
 ### Étapes
 
-1. **Télécharger le projet**
-   ```bash
-   # Cloner ou télécharger le dossier complet : https://github.com/MaelQllt/ExtensionChrome.git
-   ````
+1.  **Télécharger le projet**
 
+    ```bash
+    # Cloner ou télécharger le dossier complet : https://github.com/MaelQllt/ExtensionChrome.git
+    ```
 
 2.  **Créer les icônes**
 
@@ -77,6 +77,20 @@
       - La carte s'affiche dans un popup
 
 Vous pouvez consultez la [documentation d'installation complète](docs/installation.md#installation).
+
+-----
+
+## ⚠️ Notes d'utilisation et Dépannage
+
+### Problème de Géolocalisation
+
+Si le bouton **"📍 Ma position"** ne fonctionne pas et affiche un message d'erreur **"Accès à la position refusé"** (Code `PERMISSION_DENIED`) :
+
+1.  L'extension a besoin d'une permission temporaire de Chrome pour la géolocalisation.
+2.  Cliquez sur l'icône de **Cadenas (🔒)** dans la barre d'adresse du navigateur.
+3.  Autorisez l'accès à la **"Position"** pour cette extension.
+4.  Le script JavaScript interne gère et affiche cette instruction en cas de refus.
+
 
 -----
 
@@ -102,11 +116,18 @@ Trois couches sont utilisées :
 2.  **Orthophoto** : `ORTHOIMAGERY.ORTHO-HR`
 3.  **Cadastre** : `CADASTRALPARCELS.PARCELS`
 
+### Nouveaux services d'API
+
+  * **Routage :** `https://router.project-osrm.org/*` (OSRM)
+  * **Géocodage :** `https://nominatim.openstreetmap.org/*` (Nominatim)
+
 ### Permissions requises
 
   - `storage` : Stockage local (prévu pour futures fonctionnalités)
   - **`geolocation`** : Accès à la position de l'utilisateur (nécessaire pour la géolocalisation)
   - Host : `https://data.geopf.fr/*` (accès aux tuiles IGN)
+  - Host : `https://router.project-osrm.org/*` (Routage OSRM)
+  - Host : `https://nominatim.openstreetmap.org/*` (Géocodage Nominatim)
 
 -----
 
@@ -114,19 +135,17 @@ Trois couches sont utilisées :
 
 Pour comprendre le fonctionnement interne, l'architecture et les API utilisées, consultez la [documentation programmeur complète](docs/programmeur.md#programmeur).
 
+**Sujets couverts (Mis à jour) :**
 
-**Sujets couverts :**
-
-  - Architecture de l'extension (gestion des options de fond de carte)
+  - Architecture de l'extension (gestion des options de fond de carte, panneau d'itinéraire)
   - Détail de chaque fichier
-  - API Leaflet et gestion des couches (`L.tileLayer`)
-  - Utilisation de l'API `navigator.geolocation`
+  - API Leaflet, gestion des couches (`L.tileLayer`) et dessin de polylignes (`L.polyline`)
+  - Utilisation de l'API `navigator.geolocation` et gestion des erreurs
+  - Intégration des APIs OSRM et Nominatim
   - Gestion de la sécurité (CSP)
-  - Guide d'amélioration
-  - Debugging
+  - Guide d'amélioration et Debugging
 
 -----
-
 
 
 ## 📚 Ressources
@@ -166,10 +185,9 @@ Ce projet est réalisé dans un cadre éducatif.
 Ce projet répond à un exercice scolaire visant à :
 
 1.  Démontrer la faisabilité d'une carte interactive dans une extension
-2.  Consommer plusieurs services web (WMTS de l'IGN)
+2.  Consommer plusieurs services web (WMTS de l'IGN, OSRM, Nominatim)
 3.  Intégrer la géolocalisation
 4.  Produire une documentation complète (installation + programmeur)
 5.  Fournir des visuels de démonstration
 
 -----
-

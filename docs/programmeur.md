@@ -6,30 +6,30 @@
 
 Cette extension Chrome s'appuie sur une architecture de type **Popup**, utilisant le format **Manifest V3**. Elle intègre la bibliothèque cartographique **Leaflet.js** pour visualiser les services de tuiles cartographiques de l'**IGN Géoportail**.
 
+**Fonctionnalité clé ajoutée :** L'extension intègre désormais un module de calcul d'itinéraire en utilisant l'API **OSRM (Open Source Routing Machine)** pour le routage et **Nominatim (OpenStreetMap)** pour le géocodage (conversion d'adresses en coordonnées).
+
 ### Structure des fichiers
 
 L'arborescence du projet utilise un chargement local pour la bibliothèque Leaflet:
 
 ```
-
 extension-carte-ign/
-├── manifest.json          \# Configuration Manifest V3
-├── popup.html            \# Interface utilisateur (DOM)
-├── popup.js              \# Logique métier et interactions
-├── styles.css            \# Styles et mise en page
-├── docs/                 \# Documentation (installation.md, programmeur.md, etc.)
+├── manifest.json          # Configuration Manifest V3
+├── popup.html            # Interface utilisateur (DOM)
+├── popup.js              # Logique métier, carte et itinéraires
+├── styles.css            # Styles et mise en page
+├── docs/                 # Documentation (installation.md, programmeur.md, etc.)
      ├── installation.md
      └── programmeur.md
             
-├── icons/                \# Assets visuels (3 tailles)
+├── icons/                # Assets visuels (3 tailles)
 └── lib/
-     └── leaflet/          \# Contient les fichiers CSS et JS de Leaflet (Chargement local)
+     └── leaflet/          # Contient les fichiers CSS et JS de Leaflet (Chargement local)
             ├── leaflet.css
             └── leaflet.js
-
 ```
 
----
+-----
 
 ## 📄 Fichiers Détaillés et Techniques
 
@@ -41,92 +41,99 @@ extension-carte-ign/
 | :--- | :--- | :--- |
 | `manifest_version` | 3 | Utilise Manifest V3. |
 | `permissions` | `["storage", "geolocation"]` | Inclut la permission **`geolocation`** nécessaire pour le bouton "Ma position". |
-| `host_permissions` | `["https://wxs.ign.fr/*", "https://data.geopf.fr/*", ""https://router.project-osrm.org/*"]` | Autorise l'accès aux deux principaux points d'accès des tuiles IGN. |
-| `content_security_policy` |  | Sécurise l'extension contre les injections et autorise les images IGN ainsi que les styles inline de Leaflet (`'unsafe-inline'`). |
+| `host_permissions` | `["https://wxs.ign.fr/*", "https://data.geopf.fr/*", "https://router.project-osrm.org/*", "https://nominatim.openstreetmap.org/*"]` | Autorise l'accès aux tuiles IGN, au service de **Routage OSRM**, et au service de **Géocodage Nominatim**. |
+| `content_security_policy` |  | Sécurise l'extension et autorise les connexions aux domaines IGN, OSRM et Nominatim pour le calcul d'itinéraire (`connect-src`). |
 
 ### popup.html
 
 **Rôle :** Structure HTML de l'interface popup.
 
-**Architecture DOM :**
-```
+**Architecture DOM (Mise à jour) :**
+L'interface utilisateur inclut désormais un panneau pour le calcul d'itinéraire, caché par défaut.
 
+```
 .container
 ├── header (titre + sous-titre)
-├── .controls (boutons de navigation)
-├── \#map (conteneur Leaflet)
+├── .controls (boutons de navigation, sélecteur de fond de carte, bouton Itinéraire)
+├── #routePanel (NOUVEAU - Panneau d'itinéraire)
+│   ├── .route-header (Titre et bouton de fermeture)
+│   ├── .route-inputs (Champs Départ/Arrivée, Sélecteur Mode, Boutons Calculer/Effacer)
+│   └── #routeInfo (Affichage du résumé du trajet)
+├── #map (conteneur Leaflet)
 └── footer (informations temps réel)
-
 ```
 
-**Chargement des Ressources (Local) :**
-Contrairement à une implémentation CDN, cette version charge Leaflet **localement**, ce qui garantit le fonctionnement même sans connexion et offre un meilleur contrôle :
-
-* Leaflet CSS : `<link rel="stylesheet" href="lib/leaflet/leaflet.css" />`
-* Leaflet JS : `<script src="lib/leaflet/leaflet.js"></script>`
-
-L'ordre de chargement garantit que Leaflet est disponible avant l'exécution du script `popup.js`.
+**Chargement des Ressources :** Le chargement local de Leaflet est conservé.
 
 ### popup.js
 
-**Rôle :** Logique métier, initialisation carte, gestion événements.
+**Rôle :** Logique métier, initialisation carte, gestion événements et calcul d'itinéraires.
 
-#### 1. Initialisation et Couches IGN
+#### 1\. Initialisation et Couches IGN
 
-La fonction `initMap()` gère l'initialisation et la sélection des fonds de carte :
-* **Point de départ** : La carte est centrée sur Paris avec un zoom de 12.
-* **Couches WMTS** : Trois couches distinctes sont définies et gérées via un sélecteur dans l'interface:
-    * `plan` : `GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2`
-    * `ortho` : `ORTHOIMAGERY.ORTHOPHOTOS`
-    * `cadastre` : `CADASTRALPARCELS.PARCELS`
+La fonction `initMap()` gère toujours l'initialisation sur Paris et les trois couches WMTS de l'IGN : `plan`, `ortho`, `cadastre`.
 
-#### 2. Gestion de la Géolocalisation
+#### 2\. Gestion de la Géolocalisation
 
-La fonction **`getUserLocation()`** utilise l'API native `navigator.geolocation.getCurrentPosition()`.
-* Elle gère les permissions et les cas d'erreur (`PERMISSION_DENIED`, `TIMEOUT`).
-* En cas de succès, elle utilise `map.flyTo()` avec un niveau de zoom de **15**.
+La fonction **`getUserLocation()`** utilise `navigator.geolocation.getCurrentPosition()`. En cas de succès, elle utilise `map.flyTo()` avec un niveau de zoom de **15**.
 
-#### 3. Fonctions Utilitaire Clés
+#### 3\. Fonctions Utilitaire Clés
 
-* **`flyToCity(coords, name)`**: Permet une navigation animée (`duration: 1.5s`) vers les villes prédéfinies (Paris, Lyon, Marseille) avec un zoom de **13**.
-* **`addMarker(coords, popupText)`**: Implémente le pattern **"marqueur unique"** en retirant l'ancien marqueur avant d'en placer un nouveau.
-* **`updateCoordinates()`**: Met à jour les informations en temps réel dans le footer lors des événements Leaflet `move` et `zoom`.
+  * **`flyToCity(coords, name)`**: Navigation animée avec un zoom de **13**.
+  * **`addMarker(coords, popupText)`**: Implémente le pattern **"marqueur unique"** pour la position/les clics.
+  * **`updateCoordinates()`**: Met à jour les informations dans le footer.
+  * **`onMapClick(e)`**: Gère désormais la sélection des points de **Départ (A)** et d'**Arrivée (B)** pour l'itinéraire si le mode `pickingLocation` est actif.
 
----
+-----
 
-## 🔧 API Leaflet et Interactions
+## 🧭 Gestion des Itinéraires (Routing)
 
-### Gestion du DOM et des Événements
-Les écouteurs d'événements sont attachés au chargement du DOM via `document.addEventListener('DOMContentLoaded', initMap)`.
+Cette nouvelle fonctionnalité est gérée par le panneau `#routePanel` dans `popup.html` et les fonctions associées dans `popup.js`.
+
+### Géocodage (Recherche d'Adresse)
+
+La fonction **`geocodeNominatim(address)`** est utilisée pour convertir une adresse textuelle en coordonnées latitude/longitude.
+
+  * **API utilisée :** Nominatim (OpenStreetMap)
+  * **URL :** `https://nominatim.openstreetmap.org/search?q=...`.
+
+### Routage (Calcul du Trajet)
+
+La fonction **`calculateRoute()`** orchestre le processus :
+
+1.  **Géocodage** des adresses si nécessaire (coordonnées non fournies).
+2.  **Conversion du mode de transport** (`DRIVING`/`WALKING`/`BICYCLING`) en profil OSRM (`car`/`foot`/`bike`).
+3.  **Appel API OSRM :** L'extension utilise le service `router.project-osrm.org`.
+      * **URL :** `https://router.project-osrm.org/route/v1/{profile}/{lon1},{lat1};{lon2},{lat2}?overview=full&geometries=geojson&alternatives=true...`.
+      * L'option **`alternatives=true`** est utilisée pour récupérer et afficher plusieurs options de trajet.
+4.  **Affichage des marqueurs :** Utilisation de **`L.divIcon`** personnalisés pour les points A (vert, Départ) et B (rouge, Arrivée).
+5.  **Affichage des trajets :** La fonction **`displayAllRoutes(routes)`** dessine les **polylignes Leaflet** (`L.polyline`), différenciant l'itinéraire principal des alternatives, et crée des **labels interactifs** sur la carte pour le résumé (distance/durée).
+
+### Sélection d'Itinéraire
+
+La fonction globale **`window.selectRoute(index)`** permet de basculer l'itinéraire principal affiché, en mettant à jour le style de la polyligne sélectionnée (couleur et épaisseur) et le contenu du panneau.
+
+-----
+
+## 🔧 API Leaflet et Interactions (Ajouts)
 
 | API Leaflet | Rôle | Exemple d'utilisation dans `popup.js` |
 | :--- | :--- | :--- |
 | `L.map('id').setView(...)` | Création de la carte. | Initialisation au centre de Paris. |
 | `L.tileLayer(url, options)` | Définition d'une couche de tuiles IGN. | Configuration des trois couches (plan, ortho, cadastre). |
 | `map.flyTo(coords, zoom, options)` | Animation de navigation. | Utilisé pour les boutons de ville et la géolocalisation. |
-| `map.on('event', callback)` | Écouteurs d'événements Leaflet. | Utilisé pour `move`, `zoom`, et `click`. |
+| `map.on('event', callback)` | Écouteurs d'événements Leaflet. | Utilisé pour `move`, `zoom`, `click` (pour la sélection des points d'itinéraire).|
+| `L.polyline(coords, options)` | Dessin d'un trajet (itinéraire). | Utilisé dans `displayAllRoutes()` pour les routes OSRM.|
+| `L.divIcon(...)` | Création d'icônes HTML personnalisées. | Utilisé pour les marqueurs Départ (A) et Arrivée (B) et les labels d'itinéraire.|
 
----
-
-## 🌐 Service IGN - Spécifications WMTS
-
-### Anatomie de l'URL WMTS
-
-L'extension utilise l'URL **`https://data.geopf.fr/wmts?`** pour accéder au service WMTS (Web Map Tile Service) de l'IGN. Ce service est optimisé pour la rapidité grâce aux tuiles pré-générées.
-
-**Paramètres clés :**
-* **Opération :** `REQUEST=GetTile`
-* **Protocole :** `SERVICE=WMTS&VERSION=1.0.0`
-* **Projection :** `TILEMATRIXSET=PM` (Pseudo-Mercator)
-* **Tuilage :** `TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`
-
----
+-----
 
 ## 🔐 Sécurité et Débogage
 
 ### Content Security Policy (CSP)
 
-Le CSP est crucial pour la sécurité de l'extension et autorise explicitement les ressources nécessaires:
-* **Scripts (`script-src`)** : `'self'` (uniquement les scripts locaux).
-* **Images (`img-src`)** : `'self'` (fichiers locaux), `data:` (pour les marqueurs), et les domaines IGN (`https://wxs.ign.fr`, `https://data.geopf.fr`).
+Le CSP est crucial pour la sécurité et a été mis à jour pour autoriser les ressources externes requises pour le routage/géocodage:
 
+  * **Scripts (`script-src`)** : `'self'` (uniquement les scripts locaux).
+  * **Images (`img-src`)** : `'self'`, `data:`, et les domaines IGN et OpenStreetMap (`https://wxs.ign.fr`, `https://data.geopf.fr`, `https://*.openstreetmap.org`).
+  * **Connexions (`connect-src`)** : Doit explicitement autoriser tous les services externes contactés par `fetch` : `'self'`, `https://wxs.ign.fr`, `https://data.geopf.fr`, `https://router.project-osrm.org`, et `https://nominatim.openstreetmap.org`.

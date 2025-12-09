@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carte IGN Interactive</title>
-    <!-- Leaflet CSS (LOCAL) -->
     <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
-    <!-- Styles personnalisés -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -30,21 +28,22 @@
             <button id="btnRoute" class="btn btn-primary">🚗 Itinéraire</button>
         </div>
 
-        <!-- Panneau d'itinéraire (caché par défaut) -->
         <div id="routePanel" class="route-panel hidden">
             <div class="route-header">
                 <h3>📍 Calculer un itinéraire</h3>
                 <button id="closeRoutePanel" class="btn-close">×</button>
             </div>
             <div class="route-inputs">
-                <div class="input-group">
+                <div class="input-group search-container">
                     <label>🟢 Départ</label>
                     <input type="text" id="startInput" placeholder="Adresse de départ">
+                    <div id="startSuggestions" class="suggestions-dropdown"></div> 
                     <button id="btnSetStart" class="btn-small">📍 Cliquer sur carte</button>
                 </div>
-                <div class="input-group">
+                <div class="input-group search-container">
                     <label>🔴 Arrivée</label>
                     <input type="text" id="endInput" placeholder="Adresse d'arrivée">
+                    <div id="endSuggestions" class="suggestions-dropdown"></div>
                     <button id="btnSetEnd" class="btn-small">📍 Cliquer sur carte</button>
                 </div>
                 <div class="input-group">
@@ -74,10 +73,8 @@
         </footer>
     </div>
     
-    <!-- Leaflet JavaScript (LOCAL) -->
     <script src="lib/leaflet/leaflet.js"></script>
     
-    <!-- Script de l'extension -->
     <script src="popup.js"></script>
 </body>
 </html>

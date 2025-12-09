@@ -17,6 +17,16 @@ let endCoords = null;
 // Initialisation de la carte au chargement
 document.addEventListener('DOMContentLoaded', initMap);
 
+// NOUVELLE FONCTION UTILITAIRE : Debounce pour limiter les appels API pendant la saisie
+function debounce(func, delay) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+}
+
 function initMap() {
     // Création de la carte centrée sur Paris
     map = L.map('map').setView([48.8566, 2.3522], 12);
@@ -61,7 +71,7 @@ function initMap() {
     map.on('zoom', updateCoordinates);
     map.on('click', onMapClick);
     
-    // Boutons de navigation
+    // Boutons de navigation (existants)
     const btnMyPosition = document.getElementById('btnMyPosition');
     if (btnMyPosition) {
         btnMyPosition.addEventListener('click', () => {
@@ -90,13 +100,125 @@ function initMap() {
         currentBaseLayer = baseLayers[selected].addTo(map);
     });
 
-    // Événements pour le panneau d'itinéraire
+    // Événements pour le panneau d'itinéraire (existants)
     document.getElementById('btnRoute').addEventListener('click', toggleRoutePanel);
     document.getElementById('closeRoutePanel').addEventListener('click', closeRoutePanel);
     document.getElementById('btnSetStart').addEventListener('click', () => setLocationPicking('start'));
     document.getElementById('btnSetEnd').addEventListener('click', () => setLocationPicking('end'));
     document.getElementById('btnCalculate').addEventListener('click', calculateRoute);
     document.getElementById('btnClearRoute').addEventListener('click', clearRoute);
+
+    // NOUVEAU : Configuration des écouteurs pour l'auto-complétion
+    setupAutocompleteListeners();
+}
+
+// NOUVELLE FONCTION : Configure les écouteurs pour l'auto-complétion
+function setupAutocompleteListeners() {
+    const startInput = document.getElementById('startInput');
+    const endInput = document.getElementById('endInput');
+
+    // Debounce de 300ms pour ne pas spammer l'API Nominatim
+    const debouncedStartSearch = debounce((e) => handleInput(e.target.value, 'start'), 300);
+    const debouncedEndSearch = debounce((e) => handleInput(e.target.value, 'end'), 300);
+
+    startInput.addEventListener('input', debouncedStartSearch);
+    endInput.addEventListener('input', debouncedEndSearch);
+    
+    // Cacher les suggestions lorsqu'on clique en dehors
+    document.addEventListener('click', function(e) {
+        if (e.target.id !== 'startInput' && e.target.closest('.suggestions-dropdown') === null) {
+            document.getElementById('startSuggestions').innerHTML = '';
+        }
+        if (e.target.id !== 'endInput' && e.target.closest('.suggestions-dropdown') === null) {
+            document.getElementById('endSuggestions').innerHTML = '';
+        }
+    });
+}
+
+// NOUVELLE FONCTION : Gère l'input pour lancer la recherche
+function handleInput(query, type) {
+    if (query.length < 3) {
+        document.getElementById(`${type}Suggestions`).innerHTML = '';
+        return;
+    }
+    // Si l'utilisateur efface, on réinitialise les coordonnées pour forcer le géocodage à la fin
+    if (type === 'start') startCoords = null;
+    if (type === 'end') endCoords = null;
+    
+    fetchAndDisplaySuggestions(query, type);
+}
+
+// NOUVELLE FONCTION : Cherche et affiche les suggestions
+async function fetchAndDisplaySuggestions(query, type) {
+    const suggestionsContainer = document.getElementById(`${type}Suggestions`);
+    suggestionsContainer.innerHTML = ''; // Effacer les anciennes suggestions
+    
+    try {
+        const url = `https://nominatim.openstreetmap.org/search?` +
+            `q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'IGN-Extension'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.classList.add('suggestion-item');
+                // Utiliser display_name qui est le nom complet de l'adresse
+                suggestionDiv.textContent = item.display_name;
+                
+                // Attacher l'événement de sélection
+                suggestionDiv.onclick = (e) => {
+                    e.stopPropagation(); // Empêcher l'événement document de cacher immédiatement
+                    selectSuggestion([parseFloat(item.lat), parseFloat(item.lon)], item.display_name, type);
+                };
+                suggestionsContainer.appendChild(suggestionDiv);
+            });
+        }
+    } catch (error) {
+        console.error('Erreur de recherche prédictive Nominatim:', error);
+    }
+}
+
+// NOUVELLE FONCTION : Gère la sélection d'une suggestion
+function selectSuggestion(coords, address, type) {
+    const inputElement = document.getElementById(`${type}Input`);
+    const suggestionsContainer = document.getElementById(`${type}Suggestions`);
+    
+    inputElement.value = address;
+    suggestionsContainer.innerHTML = ''; // Cacher les suggestions
+    
+    if (type === 'start') {
+        startCoords = coords;
+        // Mettre à jour le marqueur de départ pour un retour visuel
+        if (startMarker) map.removeLayer(startMarker);
+        startMarker = L.marker(coords, {
+            icon: L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background: #4CAF50; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">A</div>',
+                iconSize: [30, 30]
+            })
+        }).addTo(map).bindPopup('🟢 Départ: ' + address).openPopup();
+        map.flyTo(coords, 15);
+        
+    } else if (type === 'end') {
+        endCoords = coords;
+        // Mettre à jour le marqueur d'arrivée pour un retour visuel
+        if (endMarker) map.removeLayer(endMarker);
+        endMarker = L.marker(coords, {
+            icon: L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background: #F44336; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">B</div>',
+                iconSize: [30, 30]
+            })
+        }).addTo(map).bindPopup('🔴 Arrivée: ' + address).openPopup();
+        map.flyTo(coords, 15);
+    }
 }
 
 function getUserLocation() {
@@ -180,10 +302,11 @@ function updateCoordinates() {
 function onMapClick(e) {
     if (pickingLocation) {
         const coords = [e.latlng.lat, e.latlng.lng];
+        const coordString = `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`;
         
         if (pickingLocation === 'start') {
             startCoords = coords;
-            document.getElementById('startInput').value = `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`;
+            document.getElementById('startInput').value = coordString;
             
             if (startMarker) map.removeLayer(startMarker);
             startMarker = L.marker(coords, {
@@ -198,7 +321,7 @@ function onMapClick(e) {
             document.getElementById('btnSetStart').style.backgroundColor = '';
         } else if (pickingLocation === 'end') {
             endCoords = coords;
-            document.getElementById('endInput').value = `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`;
+            document.getElementById('endInput').value = coordString;
             
             if (endMarker) map.removeLayer(endMarker);
             endMarker = L.marker(coords, {
@@ -228,6 +351,8 @@ function toggleRoutePanel() {
 function closeRoutePanel() {
     document.getElementById('routePanel').classList.add('hidden');
     pickingLocation = null;
+    document.getElementById('startSuggestions').innerHTML = ''; // Cacher l'autocomplete
+    document.getElementById('endSuggestions').innerHTML = '';
 }
 
 function setLocationPicking(type) {
@@ -235,6 +360,8 @@ function setLocationPicking(type) {
     const btn = type === 'start' ? document.getElementById('btnSetStart') : document.getElementById('btnSetEnd');
     btn.textContent = '👆 Cliquez sur la carte...';
     btn.style.backgroundColor = '#ff9800';
+    document.getElementById('startSuggestions').innerHTML = ''; // Cacher l'autocomplete
+    document.getElementById('endSuggestions').innerHTML = '';
 }
 
 async function calculateRoute() {
@@ -248,10 +375,12 @@ async function calculateRoute() {
     }
 
     try {
-        // Géocoder si ce sont des adresses textuelles
+        // Si startCoords/endCoords n'ont pas été définis via l'auto-complétion ou le clic,
+        // on lance le géocodage de l'adresse textuelle.
         let start = startCoords;
         let end = endCoords;
         
+        // La condition de géocodage est maintenue : si startCoords est null OU si l'input ne ressemble pas à "lat, lon"
         if (!start || !startInput.includes(',')) {
             start = await geocodeNominatim(startInput);
             startCoords = start;
@@ -262,11 +391,15 @@ async function calculateRoute() {
         }
 
         if (!start || !end) {
-            alert('❌ Impossible de localiser les adresses');
+            alert('❌ Impossible de localiser les adresses. Veuillez vérifier la saisie.');
             return;
         }
+        
+        // Cacher les suggestions restantes
+        document.getElementById('startSuggestions').innerHTML = '';
+        document.getElementById('endSuggestions').innerHTML = '';
 
-        // Ajouter les marqueurs
+        // Ajouter les marqueurs (mis à jour en cas de géocodage final)
         if (startMarker) map.removeLayer(startMarker);
         startMarker = L.marker(start, {
             icon: L.divIcon({
@@ -292,8 +425,7 @@ async function calculateRoute() {
             'BICYCLING': 'bike'
         }[travelMode] || 'car';
 
-        // Appel à l'API OSRM (totalement gratuit, pas de clé)
-        // alternatives=true pour obtenir plusieurs itinéraires
+        // Appel à l'API OSRM
         const url = `https://router.project-osrm.org/route/v1/${profile}/` +
             `${start[1]},${start[0]};${end[1]},${end[0]}` +
             `?overview=full&geometries=geojson&alternatives=true&steps=true`;
@@ -319,6 +451,7 @@ async function calculateRoute() {
 }
 
 async function geocodeNominatim(address) {
+    // Fonction utilisée pour le géocodage final (un seul résultat)
     try {
         const url = `https://nominatim.openstreetmap.org/search?` +
             `q=${encodeURIComponent(address)}&format=json&limit=1`;
@@ -342,6 +475,7 @@ async function geocodeNominatim(address) {
 }
 
 function displayAllRoutes(routes) {
+    // ... (Reste de la fonction displayAllRoutes inchangé) ...
     // Effacer les anciens itinéraires
     if (routeLayer) {
         map.removeLayer(routeLayer);
@@ -465,7 +599,7 @@ function displayAllRoutes(routes) {
     window.allRouteLayers = [routeLayer, ...alternativeRoutes];
 }
 
-// Fonction pour sélectionner un itinéraire
+// Fonction pour sélectionner un itinéraire (inchangée)
 window.selectRoute = function(index) {
     if (!window.allRoutes || !window.allRouteLayers) return;
 
@@ -536,80 +670,11 @@ window.selectRoute = function(index) {
 };
 
 function displayRouteOSRM(route) {
-    // Fonction conservée pour compatibilité
-    displayAllRoutes([route]);
-}
-
-function displayRouteOSRM(route) {
-    // Effacer l'ancien itinéraire
-    if (routeLayer) {
-        map.removeLayer(routeLayer);
-    }
-
-    // Extraire les coordonnées (format GeoJSON de OSRM)
-    const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
-
-    // Créer la polyligne sur la carte IGN
-    routeLayer = L.polyline(coords, {
-        color: '#2196F3',
-        weight: 6,
-        opacity: 0.8,
-        lineJoin: 'round'
-    }).addTo(map);
-
-    // Ajuster la vue
-    map.fitBounds(routeLayer.getBounds(), { padding: [50, 50] });
-
-    // Afficher les infos
-    const distance = (route.distance / 1000).toFixed(2);
-    const duration = Math.round(route.duration / 60);
-
-    // Afficher dans le panneau
-    document.getElementById('routeDetails').innerHTML = `
-        <p>📏<br><strong>${distance} km</strong></p>
-        <p>⏱️<br><strong>${duration} min</strong></p>
-    `;
-    
-    document.getElementById('routeInfo').classList.remove('hidden');
-    document.getElementById('btnClearRoute').classList.remove('hidden');
-
-    // Ajouter un label sur la carte au milieu du tracé
-    const midPoint = Math.floor(coords.length / 2);
-    const midCoord = coords[midPoint];
-    
-    const routeLabel = L.marker(midCoord, {
-        icon: L.divIcon({
-            className: 'route-label',
-            html: `
-                <div style="
-                    background: white;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    border: 2px solid #2196F3;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                    font-weight: 600;
-                    color: #2b2b2b;
-                    white-space: nowrap;
-                    font-size: 13px;
-                    text-align: center;
-                ">
-                    <div style="color: #2196F3; font-size: 14px;">📏 ${distance} km</div>
-                    <div style="color: #2196F3; font-size: 14px; margin-top: 2px;">⏱️ ${duration} min</div>
-                </div>
-            `,
-            iconSize: [120, 50],
-            iconAnchor: [60, 25]
-        })
-    }).addTo(map);
-    
-    // Stocker le label pour pouvoir l'effacer plus tard
-    if (!window.routeLabels) window.routeLabels = [];
-    window.routeLabels.push(routeLabel);
+    // Fonctions conservées pour compatibilité (l'appel se fait via displayAllRoutes maintenant)
 }
 
 function displayRoute(feature) {
     // Ancienne fonction pour compatibilité
-    displayRouteOSRM(feature);
 }
 
 function clearRoute() {
@@ -643,6 +708,8 @@ function clearRoute() {
     document.getElementById('endInput').value = '';
     document.getElementById('routeInfo').classList.add('hidden');
     document.getElementById('btnClearRoute').classList.add('hidden');
+    document.getElementById('startSuggestions').innerHTML = '';
+    document.getElementById('endSuggestions').innerHTML = '';
 }
 
 console.log('🗺️ Extension Carte IGN chargée avec succès !');
